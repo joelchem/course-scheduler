@@ -28,8 +28,18 @@ function Navbar({
         )}
       </button>
 
-      <a href="/" style={{ textDecoration: "none" }}>
-        <Title className={styles.logoText}>ScheduleTerp</Title>
+      <a href="/" style={{ display: "flex", alignItems: "center", textDecoration: "none", gap: "7px", paddingLeft: "7px"}}>
+        <img 
+          src="/logo3.png" 
+          alt="Logo" 
+          style={{ height: "42px", margin: 0, padding: 0, display: "block" }} 
+        />
+        <Title 
+          className={styles.logoText} 
+          style={{ margin: 0, padding: 0 }}
+        >
+          ScheduleTerp
+        </Title>
       </a>
 
       <button
