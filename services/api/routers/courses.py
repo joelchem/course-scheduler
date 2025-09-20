@@ -14,7 +14,7 @@ async def latest_semester():
     cache_key = "latest-semester"
     cached = db.cache.get(cache_key)
     if cached:
-        return cached
+        return orjson.loads(cached)
     
     collection = db.mongo["Metadata"]["all-semesters"]
     all_semesters = collection.find()
@@ -24,8 +24,8 @@ async def latest_semester():
         if semester["active"]:
             latest = max(int(semester["_id"]), latest)
     
-    latest = str(latest)
-    db.cache.setex(cache_key, 24*60*60, latest)
+    latest = {"latest": str(latest)}
+    db.cache.setex(cache_key, 24*60*60, orjson.dumps(latest))
 
     return latest
 
