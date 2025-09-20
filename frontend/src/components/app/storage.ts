@@ -49,7 +49,7 @@ export async function createSchedule(): Promise<Schedule> {
     let stored = localStorage.getItem("totalCreated");
     let n = (stored) ? parseInt(stored) : 0;
 
-    let semester: string = await axios.get("http://api.scheduleterp.com/latest-semester")
+    let semester: string = await axios.get("https://api.scheduleterp.com/latest-semester")
                     .then(resp => resp.data.latest ?? alert("Error: Couldn't determine semester"))
                     .catch(err => {
                         console.error(err);
