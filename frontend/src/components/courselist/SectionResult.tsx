@@ -47,7 +47,7 @@ const SectionResult: SectionResultComponent = ({
 
     res.reverse().forEach((res) =>
       res.then((res) => {
-        res.gpa ? setGPA(res.gpa) : null;
+        res.gpa ? setGPA(res.gpa) : setGPA(null);
       })
     );
 

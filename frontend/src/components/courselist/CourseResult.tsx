@@ -4,8 +4,9 @@ import { Section } from "../../types/api";
 import { CourseResultComponent } from "./courselist.types";
 import SectionResult from "./SectionResult";
 import { Collapse } from "@mantine/core";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import toast from "react-hot-toast";
+import { AppContext } from "../app/App";
 
 const CourseResult: CourseResultComponent = ({
   course,
@@ -28,6 +29,8 @@ const CourseResult: CourseResultComponent = ({
     
   };
 
+  let appContext = useContext(AppContext);
+
   let [expanded, setExpanded] = useState(false);
 
   return (
@@ -35,7 +38,7 @@ const CourseResult: CourseResultComponent = ({
       <div className={styles.courseInfo}>
         <div className={styles.courseHeader}>
           <span className={styles.courseID} title="View on Testudo">
-            <a href={`https://app.testudo.umd.edu/soc/search?courseId=${course._id}&sectionId=&termId=202508&_openSectionsOnly=on&creditCompare=&credits=&courseLevelFilter=ALL&instructor=&_facetoface=on&_blended=on&_online=on&courseStartCompare=&courseStartHour=&courseStartMin=&courseStartAM=&courseEndHour=&courseEndMin=&courseEndAM=&teachingCenter=ALL&_classDay1=on&_classDay2=on&_classDay3=on&_classDay4=on&_classDay5=on`}
+            <a href={`https://app.testudo.umd.edu/soc/search?courseId=${course._id}&sectionId=&termId=${appContext?.currentSchedSem}&_openSectionsOnly=on&creditCompare=&credits=&courseLevelFilter=ALL&instructor=&_facetoface=on&_blended=on&_online=on&courseStartCompare=&courseStartHour=&courseStartMin=&courseStartAM=&courseEndHour=&courseEndMin=&courseEndAM=&teachingCenter=ALL&_classDay1=on&_classDay2=on&_classDay3=on&_classDay4=on&_classDay5=on`}
               target="_blank" rel="noopener noreferrer"
             >
               {course._id}

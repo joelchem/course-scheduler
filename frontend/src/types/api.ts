@@ -52,6 +52,7 @@ export interface TimeBlock {
 export interface Schedule {
   id: string;
   name: string;
+  semester: string;
   sections: [Course, Section][];
   colorMap: {[section: string]: number};
 }

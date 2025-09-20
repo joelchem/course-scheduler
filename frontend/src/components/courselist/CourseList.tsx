@@ -86,7 +86,7 @@ let CourseList: CourseListComponent = ({
     }
     const handler = setTimeout(async () => {
       // this is running with selectedSections from initial prob
-      let res = await api.get(`https://api.scheduleterp.com/search/202508`, {
+      let res = await api.get(`https://api.scheduleterp.com/search/${appContext?.currentSchedSem}`, {
         params: { query: appContext?.searchVal },
       });
 

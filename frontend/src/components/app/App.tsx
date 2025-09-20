@@ -34,6 +34,8 @@ export type AppContextType = {
   setCurrentScheduleName: React.Dispatch<React.SetStateAction<string>>;
   currentScheduleID: string;
   setCurrentScheduleID: React.Dispatch<React.SetStateAction<string>>;
+  currentSchedSem: string;
+  setCurrentSchedSem: React.Dispatch<React.SetStateAction<string>>;
   searchVal: string;
   setSearchVal: React.Dispatch<React.SetStateAction<string>>;
   colorMap: {[section: string]: number};
@@ -53,6 +55,7 @@ function App() {
   let [controlPanelToggled, setControlPanelToggle] = useState<boolean>(false);
   let [currentScheduleName, setCurrentScheduleName] = useState<string>("");
   let [currentScheduleID, setCurrentScheduleID] = useState<string>("");
+  let [currentSchedSem, setCurrentSchedSem] = useState<string>("");
   let [schedulesList, setSchedulesList] = useState<Schedule[]>([]);
   let [searchVal, setSearchVal] = useState<string>("");
   let [colorMap, setColorMap] = useState<{[section: string]: number}>({});
@@ -70,11 +73,12 @@ function App() {
             let out: [Course, Section][] = [];
 
             let promises = [];
+            let semester = response.data.schedule.semester;
 
             for(let sectionCode of response.data.schedule.sections) {
               let [courseID, sectionID]: string[] = sectionCode.split("-");
 
-              promises.push(api.get(`https://api.scheduleterp.com/search/202508?query=${courseID}`).then((response) => {
+              promises.push(api.get(`https://api.scheduleterp.com/search/${semester}?query=${courseID}`).then((response) => {
                 if(response.data.size) {
                   let course: Course = response.data.courses[0];
                   let section: Section | undefined = course.sections.find((s) => s.section_id == sectionID);
@@ -90,7 +94,8 @@ function App() {
                 id: crypto.randomUUID(),
                 name: `Shared [${id}]`,
                 colorMap: response.data.schedule.colorMap,
-                sections: out
+                sections: out,
+                semester: semester
               }
               console.log(sched)
               saveSchedule(sched);
@@ -112,13 +117,14 @@ function App() {
     }
 
     // check to see if there is a share URL
+    
+    getActiveSchedule().then(schedule => {
+      let scheduleList = getScheduleList();
 
-    let schedule = getActiveSchedule();
-    let scheduleList = getScheduleList();
-
-    // set everything for that active schedule
-    setCurrentScheduleID(schedule.id);
-    setSchedulesList(scheduleList);
+      // set everything for that active schedule
+      setCurrentScheduleID(schedule.id);
+      setSchedulesList(scheduleList);
+    })
   }, []);
 
 
@@ -132,7 +138,8 @@ function App() {
       id: currentScheduleID,
       name: currentScheduleName,
       sections: selectedSections,
-      colorMap: colorMap
+      colorMap: colorMap,
+      semester: currentSchedSem
     });
   }, [currentScheduleName, selectedSections, colorMap]);
 
@@ -141,13 +148,38 @@ function App() {
       return;
     }
     setActiveSchedule(currentScheduleID);
-    let schedule = getActiveSchedule();
-    setColorMap(schedule.colorMap);
-    setCurrentScheduleName(schedule.name);
-    setSelectedSections(schedule.sections);
-    setSchedulesList(getScheduleList());
-    let colorOpts = unusedColors(schedule.sections, schedule.colorMap);
-    setNextColor(colorOpts[Math.floor(Math.random()*colorOpts.length)]);
+    getActiveSchedule().then(schedule => {
+      setColorMap(schedule.colorMap);
+      setCurrentScheduleName(schedule.name);
+      setCurrentSchedSem(schedule.semester);
+      setSearchVal("");
+
+      setSelectedSections(schedule.sections);
+      // BAD IMPLEMENTATION OF SECTION UPDATING ON ITS OWN
+      // let out: [Course, Section][] = [];
+      // let promises = [];
+
+      // for(let [course, section] of schedule.sections) {
+      //   let courseID = course._id
+      //   let sectionID = section.section_id
+
+      //   promises.push(api.get(`https://api.scheduleterp.com/search/${schedule.semester}?query=${courseID}`).then((response) => {
+      //     if(response.data.size) {
+      //       let course: Course = response.data.courses[0];
+      //       let section: Section | undefined = course.sections.find((s) => s.section_id == sectionID);
+      //       if(course && section) {
+      //         out.push([course, section])
+      //       }
+      //     }
+      //   }));
+      // }
+      // setSelectedSections(out);
+
+
+      setSchedulesList(getScheduleList());
+      let colorOpts = unusedColors(schedule.sections, schedule.colorMap);
+      setNextColor(colorOpts[Math.floor(Math.random()*colorOpts.length)]);
+    });
   }, [currentScheduleID]);
 
   return (
@@ -165,6 +197,8 @@ function App() {
         setCurrentScheduleName,
         currentScheduleID,
         setCurrentScheduleID,
+        currentSchedSem,
+        setCurrentSchedSem,
         searchVal,
         setSearchVal,
         colorMap,
