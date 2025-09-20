@@ -25,4 +25,4 @@ logging.basicConfig(level=logging.INFO)
 
 @app.get("/")
 async def root():
-    return {"Title": "ScheduleTerp Backend", "Description": "This is the ScheduleTerp Backend"}
+    return {"Title": "ScheduleTerp Backend", "Description": "This is the ScheduleTerp Backend!"}

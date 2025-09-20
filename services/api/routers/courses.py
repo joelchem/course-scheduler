@@ -9,6 +9,27 @@ RESULT_LIMIT = 20
 
 router = APIRouter()
 
+@router.get("/latest-semester")
+async def latest_semester():
+    cache_key = "latest-semester"
+    cached = db.cache.get(cache_key)
+    if cached:
+        return orjson.loads(cached)
+    
+    collection = db.mongo["Metadata"]["all-semesters"]
+    all_semesters = collection.find()
+
+    latest = 202508
+    for semester in all_semesters:
+        if semester["active"]:
+            latest = max(int(semester["_id"]), latest)
+    
+    latest = {"latest": str(latest)}
+    db.cache.setex(cache_key, 24*60*60, orjson.dumps(latest))
+
+    return latest
+
+
 @router.get("/search/{semester}")
 async def search(semester: int, query: str, offset: int = 0): 
 
