@@ -65,7 +65,7 @@ function ControlPanel() {
                             })
 
                             axios.post("https://api.scheduleterp.com/schedule/upload", {
-                                semester: "202508",
+                                semester: appContext?.currentSchedSem,
                                 sections,
                                 colors: sections?.map((sec) => appContext?.colorMap[sec])
                             }).then((resp) => {
@@ -100,12 +100,13 @@ function ControlPanel() {
                     <i
                         className={`${styles.addBtn} fa-solid fa-plus`}
                         onClick={() => {
-                            let sched = createSchedule();
-                            let id = sched.id;
+                            createSchedule().then(sched => {
+                                let id = sched.id;
 
-                            saveSchedule(sched);
-                            appContext?.setCurrentScheduleID(id);
-                            setNameDropdownToggle(true);
+                                saveSchedule(sched);
+                                appContext?.setCurrentScheduleID(id);
+                                setNameDropdownToggle(true);
+                            });
                         }}></i>
                 </div>
                 <Collapse className={styles.otherSchedulesContainer} in={nameDropdownToggled}>
